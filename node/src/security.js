@@ -1,4 +1,4 @@
-﻿export function applySecurityHeaders(res) {
+export function applySecurityHeaders(res) {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("Cache-Control", "no-store, max-age=0");

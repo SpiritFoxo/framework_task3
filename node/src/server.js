@@ -1,4 +1,4 @@
-﻿import http from "node:http";
+import http from "node:http";
 import { resolveConfigFromThreeSources, defaultConfigPath, validateConfig, getMode, getPort, getTrustedOrigins, getRateLimits } from "./config.js";
 import { applySecurityHeaders, applyCors, createRateLimiter } from "./security.js";
 import { createItemsRepo } from "./items.js";
@@ -11,8 +11,8 @@ const cfg = resolveConfigFromThreeSources({
 
 const errors = validateConfig(cfg);
 if (errors.length > 0) {
-  console.error("Запуск остановлен из за некорректных настроек");
-  for (const e of errors) console.error("- " + e);
+  console.error("Запуск остановлен из-за некорректных настроек:");
+  for (const e of errors) console.error("  - " + e);
   process.exit(1);
 }
 
@@ -23,6 +23,12 @@ const limits = getRateLimits(cfg);
 const limiter = createRateLimiter({ readPerMinute: limits.readPerMinute, writePerMinute: limits.writePerMinute });
 
 const repo = createItemsRepo();
+
+if (mode === "учебный") {
+  console.log("Режим: учебный (подробные сообщения об ошибках включены)");
+  console.log("Доверенные источники:", trustedOrigins.join(", "));
+  console.log(`Лимиты: чтение ${limits.readPerMinute}/мин, запись ${limits.writePerMinute}/мин`);
+}
 
 const server = http.createServer(async (req, res) => {
   applySecurityHeaders(res);
@@ -90,6 +96,7 @@ const server = http.createServer(async (req, res) => {
   } catch (e) {
     res.statusCode = 400;
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    // В учебном режиме — подробное сообщение, в боевом — нейтральное
     const msg = mode === "учебный" ? String(e?.message ?? "Ошибка") : "Ошибка обработки запроса";
     res.end(msg);
   }

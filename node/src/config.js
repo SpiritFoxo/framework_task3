@@ -1,4 +1,4 @@
-﻿import fs from "node:fs";
+import fs from "node:fs";
 import path from "node:path";
 
 export function parseArgs(argv) {
@@ -21,7 +21,7 @@ export function readFileConfig(filePath) {
 }
 
 export function buildConfig({ fileCfg, env, args }) {
-  // порядок приоритета, файл, окружение, аргументы
+  // порядок приоритета: файл → окружение → аргументы
   const c = structuredClone(fileCfg ?? {});
   const app = c.app ?? {};
   c.app = app;

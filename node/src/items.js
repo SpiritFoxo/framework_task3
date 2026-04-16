@@ -1,4 +1,4 @@
-﻿export function createItemsRepo() {
+export function createItemsRepo() {
   const map = new Map();
 
   return {
